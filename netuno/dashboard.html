@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Netuno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body class="bg-gray-900">
+    <nav class="bg-gray-800 text-white px-4 py-2">
+        <div class="container mx-auto flex items-center justify-between">
+          <div class="font-bold text-xl">Netuno</div>
+          <div>
+            <a href="index.html" class="mx-2 hover:underline">Início</a>
+            <a href="about.html" class="mx-2 hover:underline">Sobre</a>
+            <a href="solution.html" class="mx-2 hover:underline">Solução</a>
+            <a href="dashboard.html" class="mx-2 hover:underline">Dashboard</a>
+          </div>
+        </div>
+    </nav>
+    <div class="mx-4 my-10 max-w-7xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+    
+    <!-- TERMINAL DE SIMULAÇÃO -->
+    <div id="terminal" class="bg-black text-xs text-white p-4 mx-auto mt-4 h-96 overflow-y-auto" style="width: 350px;">
+        <pre id="output" class="h-full whitespace-pre-wrap" style="margin: 0;"></pre>
+    </div>
+    <script>
+    class MicroplasticsAutomaton {
+        constructor() {
+            this.name = "Netuno";
+            this.state = "idle";
+            this.plastic_collected = 0;
+            this.data_collected = {};
+        }
+
+        start() {
+            this.state = "active";
+            this.writeOutput(`${this.name} está ativo agora.`);
+            setInterval(() => {
+                this.simulate_operation();
+            }, 1000); // simula o tempo
+        }
+
+        stop() {
+            this.state = "idle";
+            this.writeOutput(`${this.name} está inativo agora.`);
+        }
+
+        simulate_operation() {
+            // simula a coleta de microplásticos
+            if (Math.random() < 0.2) { // 20% de chance de coletar microplásticos
+                this.collect_microplastics();
+            }
+
+            // simulando a coleta de dados ambientais
+            let temp = 20 + Math.random() * 4 - 2; // temperatura aleatória entre 18 e 22 graus
+            let ph = 7.5 + Math.random() * 0.5 - 0.25; // pH aleatório entre 7.25 e 7.75
+            let time = Math.floor(Date.now() / 1000);
+            this.data_collected[time] = {temperature: temp, pH: ph};
+            this.writeOutput(`${this.name} coletou dados: temp=${temp.toFixed(1)}°C, pH=${ph.toFixed(1)}`);
+        }
+
+        collect_microplastics() {
+            let amount = Math.floor(Math.random() * 10) + 1;
+            this.plastic_collected += amount;
+            this.writeOutput(`${this.name} coletou ${amount} microplásticos. Total: ${this.plastic_collected}`);
+        }
+
+        writeOutput(text) {
+            let output = document.getElementById("output");
+            // limita o número de linhas no terminal
+            if (output.innerText.split("\n").length >= 12) {
+                output.innerText = output.innerText.split("\n").slice(1).join("\n");
+            }
+            output.innerHTML += `${text}\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+    }
+    let automaton = new MicroplasticsAutomaton();
+    automaton.start();
+    setTimeout(() => {
+        automaton.stop();
+    }, 30000);
+    </script>
+
+    <!-- GRÁFICO INTERATIVO -->
+    <div class="mx-auto my-10 w-full max-w-4xl">
+        <h2 class="text-3xl text-blue-600 font-bold mb-5">Gráficos Interativos</h2>
+        <p class="text-lg text-white">Gráficos interativos que mostram a evolução dos dados coletados ao longo do tempo.</p>
+        <canvas id="chart"></canvas>
+        <script>
+            const ctx = document.getElementById('chart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['10/03', '11/03', '12/03', '13/03', '14/03', '15/03', '16/03'],
+                    datasets: [{
+                        label: 'Temperatura',
+                        data: [25.5, 26.0, 25.8, 26.2, 25.7, 25.9, 26.1],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)'
+                    }, {
+                        label: 'pH',
+                        data: [8.1, 8.2, 8.0, 8.3, 7.9, 8.1, 8.2],
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+    </div>
+
+    <!-- MAPA DE COLETA -->
+    <div class="mx-4">
+        <div class="mx-auto my-10 w-full max-w-4xl">
+            <h2 class="text-3xl text-blue-600 font-bold mb-5">Mapa de Coleta</h2>
+            <p class="text-lg text-white mb-5">Mapa interativo que mostra as localizações onde o autômato coletou microplásticos e dados ambientais.</p>
+            <div id="map" style="height: 500px;"></div>
+            <script>
+                const map = L.map('map').setView([-15.7801, -47.9292], 5);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+    
+                const markers = [
+                    {
+                        lat: -22.960333248937715,
+                        lng: -43.09123008261718,
+                        datetime: '2023-03-10 14:30:00',
+                        temperature: 25.5,
+                        active: true,
+                        popup: 'Rio de Janeiro - RJ'
+                    },
+                    {
+                        lat: -24.014463334206795,
+                        lng: -46.35325336667669,
+                        datetime: '2023-03-09 10:00:00',
+                        temperature: 22.0,
+                        active: false,
+                        popup: 'Região Intermediária de São Paulo'
+                    },
+                    {
+                        lat: -13.223848936131061,
+                        lng: -38.67686596411535,
+                        datetime: '2023-03-08 15:30:00',
+                        temperature: 28.5,
+                        active: true,
+                        popup: 'Bahia'
+                    },
+                    {
+                        lat: -10.955623982777238,
+                        lng: -36.97262924124759,
+                        datetime: '2023-03-07 09:00:00',
+                        temperature: 26.0,
+                        active: false,
+                        popup: 'Sergipe'
+                    },
+                    {
+                        lat: -12.010383970139385,
+                        lng: -35.32323684676769,
+                        datetime: '2023-03-06 18:30:00',
+                        temperature: 23.0,
+                        active: true,
+                        popup: 'Oceano Atlântico Sul'
+                    },
+                    {
+                        lat: -16.552337484855897,
+                        lng: -36.825619343467636,
+                        datetime: '2023-03-05 12:00:00',
+                        temperature: 27.5,
+                        active: false,
+                        popup: 'Oceano Atlântico Sul'
+                    }
+                ];
+    
+                for (const marker of markers) {
+                    const popupText = `
+                        <div class="text-left">
+                            <p class="font-bold">${marker.popup}</p>
+                            <p>Data/Hora: ${new Date(marker.datetime).toLocaleString('pt-BR')}</p>
+                            <p>Temperatura: ${marker.temperature}°C</p>
+                            <p>Ativo: ${marker.active ? 'Sim' : 'Não'}</p>
+                        </div>
+                    `;
+                    L.marker([marker.lat, marker.lng]).addTo(map)
+                        .bindPopup(popupText)
+                        .openPopup();
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>
