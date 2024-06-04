@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OceanGuard</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f0f0f0;
+    }
+
+    h1 {
+        margin: 20px 0;
+    }
+
+    #map {
+        height: 600px;
+        width: 80%;
+    }
+
+    #form {
+        width: 80%;
+        margin: 20px 0;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+        display: block;
+        margin: 10px 0 5px;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <h1>OceanGuard</h1>
+    <div id="map"></div>
+
+    <div id="form">
+        <h2>Enviar Denúncia</h2>
+        <form id="reportForm">
+            <label for="lat">Latitude:</label>
+            <input type="number" step="0.000001" id="lat" required>
+
+            <label for="lon">Longitude:</label>
+            <input type="number" step="0.000001" id="lon" required>
+
+            <label for="type">Tipo:</label>
+            <select id="type" required>
+                <option value="Poluição">Poluição</option>
+                <option value="Pesca Ilegal">Pesca Ilegal</option>
+                <option value="Poluição em Rios">Poluição em Rios</option>
+            </select>
+
+            <label for="description">Descrição:</label>
+            <textarea id="description" rows="4" required></textarea>
+
+            <label for="date">Data:</label>
+            <input type="datetime-local" id="date" required>
+
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // mapa focado no br, com tile do openstreet
+    const map = L.map('map').setView([-14.235004, -51.92528], 4);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18
+    }).addTo(map);
+
+        // mock de reports/denuncias
+    const reports = [
+        { lat: -23.55052, lon: -46.633308, type: 'Poluição', description: 'Mancha de óleo avistada em São Paulo', date: '01/06/2024 14:00' }, // São Paulo
+        { lat: -22.906847, lon: -43.172897, type: 'Pesca Ilegal', description: 'Barco pescando em área protegida no Rio de Janeiro', date: '02/06/2024 09:30' }, // Rio de Janeiro
+        { lat: -12.9714, lon: -38.5014, type: 'Poluição', description: 'Descarte de lixo no mar em Salvador', date: '03/06/2024 16:45' }, // Salvador
+        { lat: -3.119028, lon: -60.021731, type: 'Poluição em Rios', description: 'Poluição avistada no Rio Amazonas', date: '04/06/2024 11:20' } // Manaus
+    ];
+
+    reports.forEach(report => {
+        L.marker([report.lat, report.lon]).addTo(map)
+            .bindPopup(`Tipo: ${report.type}<br>Descrição: ${report.description}<br>Data: ${report.date}`);
+    });
+        // submit do form
+    document.getElementById('reportForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const lat = parseFloat(document.getElementById('lat').value);
+        const lon = parseFloat(document.getElementById('lon').value);
+        const type = document.getElementById('type').value;
+        const description = document.getElementById('description').value;
+        const date = new Date(document.getElementById('date').value).toLocaleString('pt-BR');
+
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup(`Tipo: ${type}<br>Descrição: ${description}<br>Data: ${date}`);
+
+        document.getElementById('reportForm').reset();
+    });
+    </script>
+</body>
+</html>
