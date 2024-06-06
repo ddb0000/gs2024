@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Netuno Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .header {
+            background-color: #008cba;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .container {
+            margin: 20px;
+        }
+        .card {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+        }
+        .sensor {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Netuno Dashboard</h1>
+    </div>
+    <div class="container" id="dadosContainer">
+        <div class="card">
+            <h2>Dados Ambientais</h2>
+            <div id="dadosAmbientais">Carregando...</div>
+        </div>
+    </div>
+    <script>
+        async function fetchDados() {
+            const response = await fetch('http://127.0.0.1:8000/api/dados');
+            if (!response.ok) {
+                document.getElementById('dadosAmbientais').innerText = 'Erro ao carregar dados';
+                return;
+            }
+            const data = await response.json();
+            const container = document.getElementById('dadosAmbientais');
+            container.innerHTML = '';
+
+            // Agrupar dados por automato_id
+            const dadosPorAutomato = data.reduce((acc, dado) => {
+                if (!acc[dado.automato_id]) {
+                    acc[dado.automato_id] = [];
+                }
+                acc[dado.automato_id].push(dado);
+                return acc;
+            }, {});
+
+            // Função para obter o nome do sensor a partir do tipo
+            function getSensorNome(sensorId) {
+                const sensorTipos = {
+                    1: 'Temperatura',
+                    2: 'pH',
+                    3: 'Microplásticos'
+                };
+                return sensorTipos[sensorId] || `Sensor ID: ${sensorId}`;
+            }
+
+            // Criar elementos HTML para cada autômato e seus sensores
+            for (const automatoId in dadosPorAutomato) {
+                const automatoDiv = document.createElement('div');
+                automatoDiv.classList.add('automato');
+                automatoDiv.innerHTML = `<h3>Autômato ID: ${automatoId}</h3>`;
+
+                const sensores = dadosPorAutomato[automatoId].reduce((acc, dado) => {
+                    if (!acc[dado.sensor_id]) {
+                        acc[dado.sensor_id] = [];
+                    }
+                    acc[dado.sensor_id].push(dado);
+                    return acc;
+                }, {});
+
+                for (const sensorId in sensores) {
+                    const sensorDiv = document.createElement('div');
+                    sensorDiv.classList.add('sensor');
+                    sensorDiv.innerHTML = `<h4>${getSensorNome(sensorId)}</h4>`;
+
+                    // Obter as últimas 3 entradas
+                    const ultimosDados = sensores[sensorId].slice(-3).reverse();
+
+                    ultimosDados.forEach(dado => {
+                        const dadoDiv = document.createElement('div');
+                        dadoDiv.innerHTML = `
+                            <p>Data: ${new Date(dado.data_coleta).toLocaleString()}</p>
+                            <p>Valor: ${dado.valor}</p>
+                            <hr>
+                        `;
+                        sensorDiv.appendChild(dadoDiv);
+                    });
+
+                    automatoDiv.appendChild(sensorDiv);
+                }
+
+                container.appendChild(automatoDiv);
+            }
+        }
+
+        fetchDados();  // Buscar dados de todos os autômatos
+        setInterval(fetchDados, 30000); // Atualiza os dados a cada 30 segundos
+    </script>
+</body>
+</html>
