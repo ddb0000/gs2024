@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - Netuno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function showAlert() {
+            alert('Obrigado! Sua mensagem foi enviada.');
+        }
+    </script>
+</head>
+<body>
+    <nav class="bg-gray-800 text-white px-4 py-2">
+        <div class="container mx-auto flex items-center justify-between">
+          <div class="font-bold text-xl">Netuno</div>
+          <div>
+            <a href="index.html" class="mx-2 hover:underline">Início</a>
+            <a href="about.html" class="mx-2 hover:underline">Sobre</a>
+            <a href="solution.html" class="mx-2 hover:underline">Solução</a>
+            <a href="dashboard.html" class="mx-2 hover:underline">Dashboard</a>
+          </div>
+        </div>
+    </nav>
+    <main class="mx-4">
+    <div class="mx-auto my-10 w-full max-w-4xl">
+        <h1 class="text-4xl text-blue-600 font-bold mb-5">Equipe Turing</h1>
+        <p class="text-lg text-gray-700">
+            Na Turing, nos dedicamos a fornecer soluções inovadoras para os desafios do mundo moderno. <br>
+            Criamos produtos e serviços que melhoram a vida das pessoas em rumo a um futuro mais sustentável. <br>
+            Junte-se a nós nessa jornada e descubra como a tecnologia pode fazer uma diferença positiva no mundo.
+        </p>
+    </div>
+    <div class="mx-auto my-10 w-full max-w-4xl">
+        <h2 class="text-3xl text-blue-600 font-bold mb-5">Membros da Equipe</h2>
+        <p class="text-lg text-gray-700">
+            <ul class="list-none list-inside text-lg text-gray-700">
+                <li>Andre Ribeiro Leli - RM97780</li>
+                <li>Daniel Barcellos - RM98185</li>
+                <li>Marcone Santos Ribeiro - RM552585</li>
+                <li>Murillo Barbosa Lemos - RM550445</li>
+                <li>Samyr Tatoni Kotait - RM99629</li>
+            </ul>
+        </p>
+    </div>
+    <div class="mx-auto my-10 w-full max-w-4xl">
+        <h2 class="text-3xl text-blue-600 font-bold mb-5">Contato</h2>
+        <form action="#" method="post" onsubmit="showAlert(); return false;">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="name">Nome</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Nome">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="email">Email</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="Email">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="message">Mensagem</label>
+                <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" rows="4" placeholder="Mensagem"></textarea>
+            </div>
+            <div class="flex items-center justify-center">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Enviar</button>
+            </div>
+        </form>
+    </div>
+    </main>
+</body>
+</html>
